@@ -4,5 +4,10 @@
   </head>
   <body>
       <h1>Hello, {{ data['user'].name }}!</h1>
+      {%  if data['user'].company == 'microsoft' %}
+      <h2>You work for microsoft</h2>
+      {% else  %}
+      <h3>you don't work at microsoft</h3>
+      {% endif %}
   </body>
 </html>

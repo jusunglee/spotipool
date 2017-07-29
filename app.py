@@ -1,11 +1,15 @@
 from flask import Flask
 from flask import render_template
 
+
 app = Flask(__name__)
+
 
 @app.route('/')
 def index():
-    user = {'name': 'jusung'}
+    user = {
+        'name': 'jusung',
+        'company': 'microsoft'}
     title = "jusung's world"
     data = {
         'title': title,

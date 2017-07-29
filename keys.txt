@@ -1,0 +1,4 @@
+client_secret = 0a92fb0599f74329b47a27d3e8c1fff6
+client_id = e0c40886f3864b0e814d4393789e79d0
+playlist_id = 5rKk5YmEjTHd1UdErNK5Af
+username = jusunglee
