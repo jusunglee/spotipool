@@ -3,47 +3,73 @@ import spotipy.util as util
 import os
 from json.decoder import JSONDecodeError
 
-# Prepare tokens and authorization
-client_id = ''
-client_secret = ''
-playlist_id = ''
-username = ''
-redirect_uri = 'http://localhost/'
-keys = 'keys.txt'
 
-with open(keys) as file_:
-    content = file_.readlines()
+def load_keys():
+    """Loads the keys/tokens from keys/keys.txt into a config dict
 
-for line in content:
-    tokens = line.split('=')
-    tokens = [token.strip() for token in tokens]
-    if tokens[0] == 'client_id':
-        client_id = tokens[1]
-    elif tokens[0] == 'client_secret':
-        client_secret = tokens[1]
-    elif tokens[0] == 'username':
-        username = tokens[1]
-    elif tokens[0] == 'playlist_id':
-        playlist_id = tokens[1]
-    else:
-        print('Unknown header from keys file.')
+    This config file is necessary to load/auth api objects, such as spotipy.
 
-scope = 'playlist-modify-public'
-user_token = ''
-sp = None
+    Returns:
+        A dict mapping keys to the corresponding token value.
 
-try:
-    user_token = util.prompt_for_user_token(username, scope, client_id, client_secret, redirect_uri)
-except (AttributeError, JSONDecodeError):
-    os.remove(f".cache-{username}")
-    user_token = util.prompt_for_user_token(username, scope, client_id, client_secret, redirect_uri)
+        {'token_1': token_1_val}
+    """
+    redirect_uri = 'http://localhost/'
+    keys = 'keys/keys.txt'
+    config = {'redirect_uri': redirect_uri}
 
-if user_token:
-    sp = spotipy.Spotify(auth=user_token)
-    sp.trace = False
+    with open(keys) as file_:
+        content = file_.readlines()
+
+    for line in content:
+        tokens = line.split('=')
+        tokens = [token.strip() for token in tokens]
+        config[tokens[0]] = tokens[1]
+    return config
 
 
-def get_tracks_from_string_query(string_query):
+def load_spotipy_object(config):
+    """Sets up the spotipy.Spotify() object with config.
+
+    Sets up spotipy object with config dict
+
+    Args:
+        config: config dict with all the necessary keys/tokens/info
+
+    Returns:
+        A configured spotipy.Spotify() object
+    """
+    scope = 'playlist-modify-public'
+    user_token = ''
+    sp = None
+    username = config['username']
+    client_id = config['client_id']
+    client_secret = config['client_secret']
+    redirect_uri = config['redirect_uri']
+    try:
+        user_token = util.prompt_for_user_token(username, scope, client_id, client_secret, redirect_uri)
+    except (AttributeError, JSONDecodeError):
+        os.remove(f".cache-{username}")
+        user_token = util.prompt_for_user_token(username, scope, client_id, client_secret, redirect_uri)
+    if user_token:
+        sp = spotipy.Spotify(auth=user_token)
+        sp.trace = False
+    return sp
+
+
+def get_tracks_from_string_query(sp, string_query):
+    """Searches for spotify songs.
+
+    Retrieves raw results of a string query for a track and returns it.
+
+    Args:
+        sp: spotipy.Spotify() object preconfigured for auth.
+        string_query: string query to search spotify for song names
+
+    Returns:
+        An array of JSON objects
+    """
+
     results = sp.search(string_query)['tracks']['items']
     return_list = []
     for result in results:
@@ -55,15 +81,3 @@ def get_tracks_from_string_query(string_query):
             'song_uri': result['uri']
         })
     return return_list
-
-
-def test_search():
-    items = get_tracks_from_string_query('Migos')
-    for item in items:
-        print(item,'\n')
-    return items
-
-
-
-
-print(test_search())
