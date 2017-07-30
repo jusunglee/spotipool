@@ -22,7 +22,7 @@ def test_search(sp):
     """
     items = get_tracks_from_string_query(sp, 'Champagne and Sunshine')
     for item in items:
-        print(item,'\n')
+        print(item, '\n')
     return items
 
 
