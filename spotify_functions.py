@@ -15,7 +15,7 @@ def load_keys():
         {'token_1': token_1_val}
     """
     redirect_uri = 'http://localhost/'
-    keys = 'keys/keys.txt'
+    keys = 'keys/spotify_keys.txt'
     config = {'redirect_uri': redirect_uri}
 
     with open(keys) as file_:
