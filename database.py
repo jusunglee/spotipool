@@ -4,12 +4,18 @@ import pyrebase
 
 def firebase():
     """fireBase returns a firebase instance to be used when posting/reading from the database"""
-    config = {
-        "apiKey": "AIzaSyCG5371lAsnsLMTtcSV5IirInICeuLOZDM",
-        "authDomain": "spotipool-ff2b7.firebaseapp.com",
-        "databaseURL": "https://spotipool-ff2b7.firebaseio.com",
-        "storageBucket": "spotipool-ff2b7.appspot.com"
-    }
+    keys = "keys/api_auth.txt"
+    with open(keys) as file_:
+        content = file_.readlines()
+
+    authinfo = dict()
+
+    config = dict()
+
+    for line in content:
+        tokens = line.split('=')
+        tokens = [token.strip() for token in tokens]
+        config[tokens[0]] = tokens[1]
 
     return pyrebase.initialize_app(config)
 
@@ -40,4 +46,4 @@ def testdatabase():
     user = signin(firebase())
     push(firebase().database(), user, "test", "value")
 
-testdatabase()
+firebase()
