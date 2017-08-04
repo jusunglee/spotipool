@@ -3,8 +3,9 @@ UserTable Schema:
 
 "UserTable":{
     UID:{
-        "FBID": FacebookID,
-        "Playlists": PlaylistIDS as semicolon seperated string
+        "Method": "Google"/"Facebook",
+        "Token": Login token associated with login method
+        "playlists": PlaylistIDS as semicolon seperated string
     }
     ...
 }
