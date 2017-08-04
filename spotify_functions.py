@@ -83,13 +83,7 @@ def get_tracks_from_string_query(sp, string_query):
     return return_list
 
 
-def addTrackToPlayList(track_id):
-    sp = load_spotipy_object(load_keys())
-    username = 'jusunglee'
-    playlist_id = '5rKk5YmEjTHd1UdErNK5Af'
+def add_track_to_playlist(sp, track_id, playlist_id, username):
     mod_track_uri = ['spotify:track:'+track_id]
     results = sp.user_playlist_add_tracks(username, playlist_id, mod_track_uri)
     print(results)
-
-
-addTrackToPlayList('296mmTJOJ904FwHQsSBdDr')
