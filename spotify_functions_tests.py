@@ -1,12 +1,14 @@
 from spotify_functions import *
 
+sp = load_spotipy_object(load_keys())
+
 
 def run_all_tests():
-    sp = load_spotipy_object(load_keys())
-    test_search(sp)
+    test_search()
+    test_add_song_to_playlist()
 
 
-def test_search(sp):
+def test_search():
     """Tests the spotipy search function for a song using string query
 
     Args:
@@ -24,6 +26,11 @@ def test_search(sp):
     for item in items:
         print(item, '\n')
     return items
+
+
+def test_add_song_to_playlist():
+    test_song_id = test_search()[0]['song_id']
+    addTrackToPlayList(test_song_id)
 
 
 run_all_tests()
