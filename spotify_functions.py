@@ -87,3 +87,8 @@ def add_track_to_playlist(sp, track_id, playlist_id, username):
     mod_track_uri = ['spotify:track:'+track_id]
     results = sp.user_playlist_add_tracks(username, playlist_id, mod_track_uri)
     print(results)
+
+
+def create_playlist(sp, username, name, public=True):
+    results = sp.user_playlist_create(username, name)
+    print (results)
