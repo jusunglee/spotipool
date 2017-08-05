@@ -40,14 +40,15 @@ def post_add_track_to_playlist():
     spotify_user_id = request.form['user_id']
     playlist_id = request.form['playlist_id']
     track_id = request.form['track_id']
-    status = sf.add_track_to_playlist(spotify_user_id, playlist_id, track_id)
-    return jsonify(status)
+    search_result = sf.add_track_to_playlist(spotify_user_id, playlist_id, track_id)
+    return jsonify(search_result)
 
 
-@app.route('/t  rack/')
+@app.route('/track/')
 @app.route('/track/<string_query>')
 def get_search_track(string_query=None):
-    return jsonify(get_tracks_from_string_query(string_query))
+    sp = sf.load_spotipy_object(sf.load_keys())
+    return jsonify(sf.get_tracks_from_string_query(sp, string_query))
 
 
 if __name__ == '__main__':
