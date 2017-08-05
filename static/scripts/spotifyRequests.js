@@ -7,3 +7,9 @@ sendTrackSearchRequest = function() {
         alert("dpne");
     });
 }
+
+document.getElementById("searchButton").addEventListener("click", function(){
+    var searchBarText = document.getElementById("searchBar").value;
+    searchBarText = encodeURI(searchBarText);
+    console.log(searchBarText);
+});
