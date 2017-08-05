@@ -49,7 +49,7 @@ def load_spotipy_object(config):
     try:
         user_token = util.prompt_for_user_token(username, scope, client_id, client_secret, redirect_uri)
     except (AttributeError, JSONDecodeError):
-        os.remove(f".cache-{username}")
+        os.remove(".cache-{username}")
         user_token = util.prompt_for_user_token(username, scope, client_id, client_secret, redirect_uri)
     if user_token:
         sp = spotipy.Spotify(auth=user_token)
@@ -83,7 +83,8 @@ def get_tracks_from_string_query(sp, string_query):
     return return_list
 
 
-def add_track_to_playlist(sp, track_id, playlist_id, username):
+def add_track_to_playlist(username,track_id,playlist_id):
+    sp = load_spotipy_object(load_keys)
     mod_track_uri = ['spotify:track:'+track_id]
     results = sp.user_playlist_add_tracks(username, playlist_id, mod_track_uri)
     print(results)
