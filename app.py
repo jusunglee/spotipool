@@ -20,12 +20,18 @@ def index():
     return render_template('index.html', data=data)
 
 
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+
 @app.route('/playlist/', methods=['POST'])
 def post_create_playlist():
     spotify_user_id = request.form['user_id']
     playlist_name = request.form['playlist_name']
-    status = create_playlist(spotify_user_id, playlist_name)
-    return jsonify(status)
+    # status = create_playlist(spotify_user_id, playlist_name)
+    # return jsonify(status)
+    return
 
 
 @app.route('/playlist/song', methods=['POST'])
