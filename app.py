@@ -2,7 +2,8 @@ from flask import Flask
 from flask import render_template
 from flask import request
 from flask import jsonify
-from spotify_functions import *
+import spotify_functions as sf
+import database as db
 
 app = Flask(__name__)
 
@@ -39,11 +40,11 @@ def post_add_track_to_playlist():
     spotify_user_id = request.form['user_id']
     playlist_id = request.form['playlist_id']
     track_id = request.form['track_id']
-    status = add_track_to_playlist(spotify_user_id, playlist_id, track_id)
+    status = sf.add_track_to_playlist(spotify_user_id, playlist_id, track_id)
     return jsonify(status)
 
 
-@app.route('/track/')
+@app.route('/t  rack/')
 @app.route('/track/<string_query>')
 def get_search_track(string_query=None):
     return jsonify(get_tracks_from_string_query(string_query))

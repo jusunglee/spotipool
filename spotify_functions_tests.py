@@ -32,7 +32,7 @@ def test_add_song_to_playlist():
     test_song_id = test_search()[0]['song_id']
     playlist_id = ''
     username = ''
-    add_track_to_playlist(sp, test_song_id, playlist_id, username)
+    return add_track_to_playlist(username,test_song_id,playlist_id)
 
 
 run_all_tests()
