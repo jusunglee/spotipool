@@ -6,6 +6,7 @@ sp = load_spotipy_object(load_keys())
 def run_all_tests():
     test_search()
     test_add_song_to_playlist()
+    test_create_playlist()
 
 
 def test_search():
@@ -33,6 +34,13 @@ def test_add_song_to_playlist():
     playlist_id = ''
     username = ''
     add_track_to_playlist(sp, test_song_id, playlist_id, username)
+    
+
+def test_create_playlist():
+    username = 'spotipoolclub'
+    name = 'Test Playlist'
+    create_playlist(sp, username, name)
+
 
 
 run_all_tests()

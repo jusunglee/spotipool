@@ -4,6 +4,7 @@ from flask import request
 from flask import jsonify
 from spotify_functions import *
 
+
 app = Flask(__name__)
 
 
@@ -15,8 +16,7 @@ def index():
     title = "jusung's world"
     data = {
         'title': title,
-        'user': user
-    }
+        'user': user}
     return render_template('index.html', data=data)
 
 
@@ -45,3 +45,5 @@ def get_search_track(string_query=None):
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
+
+    
