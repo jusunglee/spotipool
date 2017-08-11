@@ -26,6 +26,16 @@ def dashboard():
     return render_template('dashboard.html')
 
 
+@app.route('/dashboard/tracks', methods=['POST'])
+def suggest_song():
+    song_id_list = request.form.getlist('data[]')
+    # code to check pyrebase for user permission to access playlist
+    # code wrapper to handle what happens when songs are suggested; voting, queue, etc
+    results = {}
+    # code that gets results of these function calls
+    return jsonify(results)
+
+
 @app.route('/playlist/', methods=['POST'])
 def post_create_playlist():
     spotify_user_id = request.form['user_id']
@@ -52,4 +62,4 @@ def get_search_track(string_query=None):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=True)
+    app.run(use_reloader=True)
