@@ -1,5 +1,3 @@
-var NUM_SELECTED_TRACKS = 0;
-
 $(document).ready(function () {
     // event listener for the search button
     $("#search-button").click(function () {
@@ -54,28 +52,19 @@ displaySearchResults = function (searchResults) {
         // onclick listener to highlight the individual search result item
         $resultItemDiv.click(function () {
             var $clickedItem = $(this);
+            $clickedItem.toggleClass("search-result-item-highlighted");
+            $clickedItem.toggleClass("search-result-item");
+            var numSelectedTracks = parseInt($("#search-results-container").attr("num-selected-tracks"));
             if ($clickedItem.attr("clicked") == "false") {
                 $clickedItem.attr("clicked", "true");
-                NUM_SELECTED_TRACKS += 1
-                // $clickedItem.toggleClass("search-result-item-highlighted");
-                $clickedItem.css({
-                    'background-color': '#282828',
-                    'color': '#1ed660',
-                    'border-color': '#d3d3d3',
-                });
+                $("#search-results-container").attr("num-selected-tracks", numSelectedTracks + 1);
             }
             else {
                 $clickedItem.attr("clicked", "false");
-                NUM_SELECTED_TRACKS -= 1;
-                // $clickedItem.toggleClass("search-result-item");
-                $clickedItem.css({
-                    'background-color': '#ffffff',
-                    'color': '#323232',
-                    'border-color': '#282828',
-                });
+                $("#search-results-container").attr("num-selected-tracks", numSelectedTracks - 1);
             }
 
-            if (NUM_SELECTED_TRACKS > 0) {
+            if (numSelectedTracks > 0) {
                 $("#add-button").removeAttr('disabled');
             }
             else {
