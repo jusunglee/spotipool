@@ -4,6 +4,7 @@ from flask import request
 from flask import jsonify
 import spotify_functions as sf
 import database as db
+import user_request_handler as urh
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -29,10 +30,9 @@ def dashboard():
 @app.route('/dashboard/tracks', methods=['POST'])
 def suggest_song():
     song_id_list = request.form.getlist('data[]')
-    # code to check pyrebase for user permission to access playlist
-    # code wrapper to handle what happens when songs are suggested; voting, queue, etc
-    results = {}
-    # code that gets results of these function calls
+    playlist_id = request.form['playlist_id']
+    user_id = request.form['user_id']
+    results = urh.handle_track_suggestion(user_id, playlist_id, song_id_list)
     return jsonify(results)
 
 
