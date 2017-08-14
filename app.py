@@ -4,9 +4,10 @@ from flask import request
 from flask import jsonify
 import spotify_functions as sf
 import database as db
+import user_request_handler as urh
 
 app = Flask(__name__)
-
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 @app.route('/')
 def index():
@@ -21,12 +22,27 @@ def index():
     return render_template('index.html', data=data)
 
 
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+
+@app.route('/dashboard/tracks', methods=['POST'])
+def suggest_song():
+    song_id_list = request.form.getlist('data[]')
+    playlist_id = request.form['playlist_id']
+    user_id = request.form['user_id']
+    results = urh.handle_track_suggestion(user_id, playlist_id, song_id_list)
+    return jsonify(results)
+
+
 @app.route('/playlist/', methods=['POST'])
 def post_create_playlist():
     spotify_user_id = request.form['user_id']
     playlist_name = request.form['playlist_name']
-    status = create_playlist(spotify_user_id, playlist_name)
-    return jsonify(status)
+    # status = create_playlist(spotify_user_id, playlist_name)
+    # return jsonify(status)
+    return
 
 
 @app.route('/playlist/song', methods=['POST'])
@@ -34,15 +50,16 @@ def post_add_track_to_playlist():
     spotify_user_id = request.form['user_id']
     playlist_id = request.form['playlist_id']
     track_id = request.form['track_id']
-    status = sf.add_track_to_playlist(spotify_user_id, playlist_id, track_id)
-    return jsonify(status)
+    search_result = sf.add_track_to_playlist(spotify_user_id, playlist_id, track_id)
+    return jsonify(search_result)
 
 
-@app.route('/t  rack/')
+@app.route('/track/')
 @app.route('/track/<string_query>')
 def get_search_track(string_query=None):
-    return jsonify(get_tracks_from_string_query(string_query))
+    sp = sf.load_spotipy_object(sf.load_keys())
+    return jsonify(sf.get_tracks_from_string_query(sp, string_query))
 
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=True)
+    app.run(use_reloader=True)
