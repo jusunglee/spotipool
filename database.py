@@ -48,6 +48,12 @@ def genplaylistid(db1, user, uid):
         value = []
     return '%s-%d' %(uid, len(value))
 
+def genuid(db1,user):
+    '''genuid returns a uid as a string equal to the number of registered users'''
+    usercount = db1.child("UserCount").get(user['idToken']).val()
+    db1.child("UserCount").set(usercount+1,user['idToken'])
+    return str(usercount)
+
 def newuser(db1, user, uid, method, token):
     ''''newuser creates a new user instance in the db'''
     data = {"method":method, "token":token, "playlists":[]}
@@ -64,7 +70,7 @@ def newplaylist(db1, user, uid, pid, name, spid, token):
             "Active":True,
             "Songs":[],
             "Blacklist":[],
-            "History":"",
+            "History":[],
             "Auth": token}
     db1.child("Playlists").child(pid).set(data, user['idToken'])
     #Add the playlists to the users list
@@ -107,16 +113,46 @@ def addsuggestedsong(db1, user, uid, pid, song):
 
 def testdatabase():
     '''testDB tests posting to the firebase database'''
+    #Authenticating
     fb1 = firebase()
     user = signin(fb1)
-    newuser(fb1.database(), user, "test", "GOOGLE", "1234567")
-    fb1.database().child("UserTable").child("test").update({"playlists": [1243-7, 2345-6, 35678-10]}, user["idToken"])
-    pid = genplaylistid(fb1.database(), user, "test")
-    newplaylist(fb1.database(), user, "test", pid, "TestPlaylist", "12345", "678910")
-    assert haspermissions(fb1.database(), user, "test", pid)
-    addsuggestedsong(fb1.database(), user, "test", pid, "testsong")
-    addsuggestedsong(fb1.database(), user, "test", pid, "test2")
-    newuser(fb1.database(), user, "test2", "FACEBOOK", "2345678")
-    adduser(fb1.database(),user,"test2",pid)
+    
+    #Adding the users
+    uid = genuid(fb1.database(),user)
+    uid2 = genuid(fb1.database(),user)
+    assert uid != uid2
+    
+    #Add first user
+    newuser(fb1.database(), user, uid, "GOOGLE", "1234567")
+    fb1.database().child("UserTable").child(uid).update({"playlists": [genplaylistid(fb1.database(),user,uid)]}, user["idToken"])
+    assert not fb1.database().child("UserTable").child(uid) is None
+    
+    #Add a new playlist
+    pid = genplaylistid(fb1.database(), user, uid)
+    assert pid == ("%s-1" % uid)
+    newplaylist(fb1.database(), user, uid, pid, "TestPlaylist", "12345", "678910")
+    assert not fb1.database().child("Playlists").child(pid) is None
+    assert haspermissions(fb1.database(), user, uid, pid)
+    
+    #add a song to the playlist
+    addsuggestedsong(fb1.database(), user, uid, pid, "testsong")
+    addsuggestedsong(fb1.database(), user, uid, pid, "test2")
+    assert "testsong" in fb1.database().child("Playlists").child(pid).child("Songs").get(user['idToken']).val()
+    assert "test2" in fb1.database().child("Playlists").child(pid).child("Songs").get(user['idToken']).val()
+    
+    #Add a user to the playlist
+    newuser(fb1.database(), user, uid2, "FACEBOOK", "2345678")
+    assert not haspermissions(fb1.database(), user, uid2, pid)
+    adduser(fb1.database(), user, uid2, pid)
+    assert haspermissions(fb1.database(), user, uid2, pid)
 
-testdatabase()
+    #Cleanup
+    db1 = fb1.database()
+    db1.child("UserTable").child(uid).remove(user['idToken'])
+    db1.child("UserTable").child(uid2).remove(user['idToken'])
+    db1.child("Playlists").child(pid).remove(user['idToken'])
+    usercount = db1.child("UserCount").get(user['idToken']).val()
+    db1.child("UserCount").set(usercount-2, user['idToken'])
+
+if __name__ == '__main__':
+    testdatabase()
