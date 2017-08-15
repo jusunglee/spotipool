@@ -44,6 +44,8 @@ def genplaylistid(db1, user, uid):
     where x is the number of playlists assigned to the uid'''
     playlists = db1.child("UserTable").child(uid).child("playlists").get(user['idToken'])
     value = playlists.val()
+    if value is None:
+        value = []
     return '%s-%d' %(uid, len(value))
 
 def newuser(db1, user, uid, method, token):
@@ -61,20 +63,35 @@ def newplaylist(db1, user, uid, pid, name, spid, token):
             "Owner":uid,
             "Active":True,
             "Songs":[],
-            "Blacklist":"",
+            "Blacklist":[],
             "History":"",
             "Auth": token}
     db1.child("Playlists").child(pid).set(data, user['idToken'])
     #Add the playlists to the users list
-    playlists = db1.child("UserTable").child(uid).child("playlists").get(user['idToken']).val()
-    playlists.append(pid)
-    db1.child("UserTable").child(uid).child("playlists").set(playlists,user['idToken'])
+    adduser(db1,user,uid,pid)
 
 def haspermissions(db1, user, uid, pid):
     ''' haspermissions takes the uid and returns true if the user has
         permissions to write to a given playlist'''
     playlists = db1.child("UserTable").child(uid).child("playlists").get(user['idToken']).val()
-    return pid in playlists
+    if playlists is None:
+        playlists = []
+    blacklist = db1.child("Playlists").child(pid).child("Blacklist").get(user['idToken']).val()
+    if blacklist is None:
+        blacklist = []
+    return pid in playlists and uid not in blacklist
+
+def adduser(db1, user, uid, pid):
+    '''adduser adds a user to the list of users with permission to edit a playlist'''
+    #Make sure this user isn't blacklisted
+    blacklist = db1.child("Playlists").child(pid).child("Blacklist").get(user['idToken']).val()
+    if (not blacklist is None) and (uid in blacklist):
+        return
+    playlists = db1.child("UserTable").child(uid).child("playlists").get(user['idToken']).val()
+    if playlists is None:
+        playlists = []
+    playlists.append(pid)
+    db1.child("UserTable").child(uid).child("playlists").set(playlists, user['idToken'])
 
 def addsuggestedsong(db1, user, uid, pid, song):
     ''' addsuggestedsong adds a suggested song to the list of songs
@@ -98,6 +115,8 @@ def testdatabase():
     newplaylist(fb1.database(), user, "test", pid, "TestPlaylist", "12345", "678910")
     assert haspermissions(fb1.database(), user, "test", pid)
     addsuggestedsong(fb1.database(), user, "test", pid, "testsong")
-    addsuggestedsong(fb1.database(),user,"test",pid,"test2")
+    addsuggestedsong(fb1.database(), user, "test", pid, "test2")
+    newuser(fb1.database(), user, "test2", "FACEBOOK", "2345678")
+    adduser(fb1.database(),user,"test2",pid)
 
 testdatabase()
