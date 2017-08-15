@@ -5,7 +5,7 @@ UserTable Schema:
     UID:{
         "Method": "Google"/"Facebook",
         "Token": Login token associated with login method
-        "playlists": PlaylistIDS as semicolon seperated string
+        "playlists": PlaylistIDS as a list of strings
     }
     ...
 }
