@@ -52,12 +52,15 @@ def newuser(db1, user, uid, method, token):
     db1.child("UserTable").child(uid).set(data, user['idToken'])
 
 def newplaylist(db1, user, uid, pid, name, spid, token):
+    '''newplaylist implements the database side of creating a playlist
+       Adds the playlist to the host user as well as creates the playlist
+       in the playlist table'''
     #Add the playlist to the playlist table
     data = {"Name": name,
             "SPID": spid,
             "Owner":uid,
             "Active":True,
-            "Songs":"",
+            "Songs":[],
             "Blacklist":"",
             "History":"",
             "Auth": token}
@@ -68,19 +71,33 @@ def newplaylist(db1, user, uid, pid, name, spid, token):
     db1.child("UserTable").child(uid).child("playlists").set(playlists,user['idToken'])
 
 def haspermissions(db1, user, uid, pid):
-    '''haspermissions takes the uid and returns true if the user has permissions to write to a given playlist'''
+    ''' haspermissions takes the uid and returns true if the user has
+        permissions to write to a given playlist'''
     playlists = db1.child("UserTable").child(uid).child("playlists").get(user['idToken']).val()
-    print(playlists)
     return pid in playlists
+
+def addsuggestedsong(db1, user, uid, pid, song):
+    ''' addsuggestedsong adds a suggested song to the list of songs
+        in the playlist database'''
+    if not haspermissions(db1, user, uid, pid):
+        return
+    songs = db1.child("Playlists").child(pid).child("Songs").get(user['idToken']).val()
+    #If there are no songs suggested yet
+    if songs is None:
+        songs = []
+    songs.append(song)
+    db1.child("Playlists").child(pid).child("Songs").set(songs, user['idToken'])
 
 def testdatabase():
     '''testDB tests posting to the firebase database'''
     fb1 = firebase()
     user = signin(fb1)
     newuser(fb1.database(), user, "test", "GOOGLE", "1234567")
-    fb1.database().child("UserTable").child("test").update({"playlists": [1243-7,2345-6,35678-10]}, user["idToken"])
-    pid = genplaylistid(fb1.database(),user,"test")
-    newplaylist(fb1.database(),user,"test",pid,"TestPlaylist","12345","678910")
-    assert(haspermissions(fb1.database(),user,"test",pid))
+    fb1.database().child("UserTable").child("test").update({"playlists": [1243-7, 2345-6, 35678-10]}, user["idToken"])
+    pid = genplaylistid(fb1.database(), user, "test")
+    newplaylist(fb1.database(), user, "test", pid, "TestPlaylist", "12345", "678910")
+    assert haspermissions(fb1.database(), user, "test", pid)
+    addsuggestedsong(fb1.database(), user, "test", pid, "testsong")
+    addsuggestedsong(fb1.database(),user,"test",pid,"test2")
 
 testdatabase()
