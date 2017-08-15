@@ -44,12 +44,11 @@ def genplaylistid(db1, user, uid):
     where x is the number of playlists assigned to the uid'''
     playlists = db1.child("UserTable").child(uid).child("playlists").get(user['idToken'])
     value = playlists.val()
-    stringlist = value.split(",")
-    return '%s-%d' %(uid, len(stringlist))
+    return '%s-%d' %(uid, len(value))
 
 def newuser(db1, user, uid, method, token):
     ''''newuser creates a new user instance in the db'''
-    data = {"method":method, "token":token, "playlists":"[]"}
+    data = {"method":method, "token":token, "playlists":[]}
     db1.child("UserTable").child(uid).set(data, user['idToken'])
 
 def newplaylist(db1, user, uid, pid, name, spid, token):
@@ -64,21 +63,24 @@ def newplaylist(db1, user, uid, pid, name, spid, token):
             "Auth": token}
     db1.child("Playlists").child(pid).set(data, user['idToken'])
     #Add the playlists to the users list
-    playlists = db1.child("UserTable").child(uid).child("playlists").get(user['idToken'])
-    playlists = playlists.val()
-    playlists = playlists.strip("[]").split(",")
+    playlists = db1.child("UserTable").child(uid).child("playlists").get(user['idToken']).val()
     playlists.append(pid)
     db1.child("UserTable").child(uid).child("playlists").set(playlists,user['idToken'])
 
+def haspermissions(db1, user, uid, pid):
+    '''haspermissions takes the uid and returns true if the user has permissions to write to a given playlist'''
+    playlists = db1.child("UserTable").child(uid).child("playlists").get(user['idToken']).val()
+    print(playlists)
+    return pid in playlists
 
 def testdatabase():
     '''testDB tests posting to the firebase database'''
     fb1 = firebase()
     user = signin(fb1)
     newuser(fb1.database(), user, "test", "GOOGLE", "1234567")
-    #data = {"Method": "Google","Token":"1234567","playlists":"[1243-7,2345-6,35678-10]"}
-    fb1.database().child("UserTable").child("test").update({"playlists": "[1243-7,2345-6,35678-10]"}, user["idToken"])
+    fb1.database().child("UserTable").child("test").update({"playlists": [1243-7,2345-6,35678-10]}, user["idToken"])
     pid = genplaylistid(fb1.database(),user,"test")
     newplaylist(fb1.database(),user,"test",pid,"TestPlaylist","12345","678910")
+    assert(haspermissions(fb1.database(),user,"test",pid))
 
 testdatabase()
