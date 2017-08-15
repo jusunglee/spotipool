@@ -15,6 +15,7 @@ PlaylistTable Schema:
 "Playlists":{
     PlaylistID:{
         "Name": Playlist Name,
+        "SPID": Spotify Playlist ID
         "Owner": Owner UID,
         "Active": True/False,
         "Songs": SongIDS as semicolon seperated string oldest to newest,
