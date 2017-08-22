@@ -11,18 +11,6 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
 @app.route('/')
-def index():
-    user = {
-        'name': 'jusung',
-        'company': 'microsoft'}
-    title = "jusung's world"
-    data = {
-        'title': title,
-        'user': user
-    }
-    return render_template('index.html', data=data)
-
-@app.route('/d')
 def dashboard():
     return render_template('dashboard.html')
 
