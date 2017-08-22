@@ -9,20 +9,8 @@ import user_request_handler as urh
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
+
 @app.route('/')
-def index():
-    user = {
-        'name': 'jusung',
-        'company': 'microsoft'}
-    title = "jusung's world"
-    data = {
-        'title': title,
-        'user': user
-    }
-    return render_template('index.html', data=data)
-
-
-@app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
 
@@ -30,8 +18,10 @@ def dashboard():
 @app.route('/dashboard/tracks', methods=['POST'])
 def suggest_song():
     song_id_list = request.form.getlist('data[]')
-    playlist_id = request.form['playlist_id']
-    user_id = request.form['user_id']
+    # playlist_id = request.form['playlist_id']
+    playlist_id = '5rh0wgsjA5d28fwaO5rPAj'
+    # user_id = request.form['user_id']
+    user_id = 'jusunglee'
     results = urh.handle_track_suggestion(user_id, playlist_id, song_id_list)
     return jsonify(results)
 

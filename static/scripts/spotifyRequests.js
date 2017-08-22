@@ -1,6 +1,7 @@
 $(document).ready(function () {
     // event listener for the search button
     $("#search-button").click(function () {
+        $("#search-results-container").empty();
         var query = $("#search-bar").val()
         var encodedQuery = encodeURI(query);
         $.get("track/" + encodedQuery, function (data, status) {
@@ -22,10 +23,18 @@ $(document).ready(function () {
             type: "POST",
             url: "/dashboard/tracks",
             data: rawData,
-        }).done(function (o) {
-            results = JSON.parse(o);
-            if (o['status'] == "success") {
-                alert('Success! Also please replace me with angular JS UI notifications');
+        }).done(function (results) {
+            console.log(results)
+            if (results['status'] == "success") {
+                alert('Songs successfully queued.');
+                $("div[clicked='true']").val(function () {
+                    var $clickedItem = $(this);
+                    $clickedItem.toggleClass("search-result-item-highlighted");
+                    $clickedItem.toggleClass("search-result-item");
+                    $clickedItem.attr("clicked", "false");
+                });
+                $("#add-button").attr('disabled', 'disabled');
+                $("#add-button").attr('num-selected-tracks', 0);
             }
             else {
                 alert('Fail!');
@@ -58,10 +67,12 @@ displaySearchResults = function (searchResults) {
             if ($clickedItem.attr("clicked") == "false") {
                 $clickedItem.attr("clicked", "true");
                 $("#search-results-container").attr("num-selected-tracks", numSelectedTracks + 1);
+                numSelectedTracks += 1;
             }
             else {
                 $clickedItem.attr("clicked", "false");
                 $("#search-results-container").attr("num-selected-tracks", numSelectedTracks - 1);
+                numSelectedTracks -= 1;
             }
 
             if (numSelectedTracks > 0) {

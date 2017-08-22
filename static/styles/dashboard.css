@@ -81,3 +81,22 @@ body {
   background-image: linear-gradient(to bottom, #2f8fd8, #2b82c4);
   text-decoration: none;
 }
+
+#play-button {
+  background: #5c42f4;
+  background-image: -webkit-linear-gradient(top, #5c42f4, #5034ef);
+  background-image: -moz-linear-gradient(top, #5c42f4, #5034ef);
+  background-image: -ms-linear-gradient(top, #5c42f4, #5034ef);
+  background-image: -o-linear-gradient(top, #5c42f4, #5034ef);
+  background-image: linear-gradient(to bottom, #5c42f4, #5034ef);
+}
+
+#play-button:hover {
+  background: #5e45ef;
+  background-image: -webkit-linear-gradient(top, #5e45ef, #513bd3);
+  background-image: -moz-linear-gradient(top, #5e45ef, #513bd3);
+  background-image: -ms-linear-gradient(top, #5e45ef, #513bd3);
+  background-image: -o-linear-gradient(top, #5e45ef, #513bd3);
+  background-image: linear-gradient(to bottom, #5e45ef, #513bd3);
+  text-decoration: none;
+}
